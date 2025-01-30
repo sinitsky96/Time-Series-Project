@@ -1,0 +1,10 @@
+Basic Statistics for CO Levels in Israel
+=======================================
+
+Mean: 0.4807
+Median: 0.4353
+Std Dev: 0.1673
+Skewness: 2.2819
+Kurtosis: 5.4968
+Min: 0.2753
+Max: 1.2072
