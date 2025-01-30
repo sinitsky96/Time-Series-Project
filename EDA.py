@@ -13,7 +13,7 @@ def ensure_visualization_dir():
         os.makedirs('visualizations')
 
 def load_data():
-    df = pd.read_csv('air_data_transformed.csv')
+    df = pd.read_csv('data/air_data_transformed.csv')
     df['תאריך ושעה'] = pd.to_datetime(df['תאריך ושעה'])
     return df.sort_values('תאריך ושעה')
 
@@ -126,6 +126,46 @@ def additional_analysis(df):
     plt.savefig('visualizations/yoy_change.png')
     plt.close()
 
+def yearly_integration(df):
+    # Calculate difference between each point and its value 12 months later
+    # Since we have 2 samples per month, we use 24 periods
+    df['Yearly_Integration'] = df['CO_Israel'] - df['CO_Israel'].shift(-24)
+    
+    plt.figure(figsize=(12, 6))
+    
+    # Plot the integration
+    plt.subplot(211)
+    plt.plot(df['תאריך ושעה'], df['Yearly_Integration'], 'b-', label='Yearly Integration')
+    plt.title('Yearly Integration (y_k - y_{k+12})')
+    plt.ylabel('Difference in CO Levels')
+    plt.legend()
+    
+    # Plot histogram of the integration values
+    plt.subplot(212)
+    plt.hist(df['Yearly_Integration'].dropna(), bins=30, color='blue', alpha=0.7)
+    plt.title('Distribution of Yearly Integration Values')
+    plt.xlabel('Difference in CO Levels')
+    plt.ylabel('Frequency')
+    
+    plt.tight_layout()
+    plt.savefig('visualizations/yearly_integration.png')
+    plt.close()
+    
+    # Calculate some statistics about the integration
+    integration_stats = {
+        'Mean Difference': df['Yearly_Integration'].mean(),
+        'Std Dev of Difference': df['Yearly_Integration'].std(),
+        'Max Increase': df['Yearly_Integration'].max(),
+        'Max Decrease': df['Yearly_Integration'].min(),
+    }
+    
+    # Append to statistics file
+    with open('visualizations/statistics_summary.txt', 'a') as f:
+        f.write("\n\nYearly Integration Statistics\n")
+        f.write("===========================\n")
+        for stat, value in integration_stats.items():
+            f.write(f"{stat}: {value:.4f}\n")
+
 def run_analysis():
     ensure_visualization_dir()
     df = load_data()
@@ -136,6 +176,7 @@ def run_analysis():
     yearly_boxplot(df)
     basic_statistics(df)
     additional_analysis(df)
+    yearly_integration(df)
     
     print("Analysis completed. The following files have been created in the 'visualizations' folder:")
     print("1. fft_heatmap.png - Frequency analysis over time")
@@ -145,6 +186,7 @@ def run_analysis():
     print("5. autocorrelation.png - Autocorrelation plot")
     print("6. rolling_stats.png - Rolling statistics")
     print("7. yoy_change.png - Year-over-year change")
+    print("8. yearly_integration.png - Yearly integration analysis")
 
 if __name__ == "__main__":
     run_analysis()

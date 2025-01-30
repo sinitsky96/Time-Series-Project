@@ -8,3 +8,11 @@ Skewness: 2.2819
 Kurtosis: 5.4968
 Min: 0.2753
 Max: 1.2072
+
+
+Yearly Integration Statistics
+===========================
+Mean Difference: 0.0355
+Std Dev of Difference: 0.1540
+Max Increase: 0.7433
+Max Decrease: -0.2901
