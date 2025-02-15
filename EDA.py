@@ -78,29 +78,78 @@ def yearly_boxplot(df):
     plt.close()
 
 def basic_statistics(df):
-    # Calculate basic statistics
+    # Calculate comprehensive statistics for model selection
     stats_dict = {
         'Mean': df['CO_Israel'].mean(),
         'Median': df['CO_Israel'].median(),
         'Std Dev': df['CO_Israel'].std(),
+        'Variance': df['CO_Israel'].var(),
         'Skewness': df['CO_Israel'].skew(),
         'Kurtosis': df['CO_Israel'].kurtosis(),
         'Min': df['CO_Israel'].min(),
-        'Max': df['CO_Israel'].max()
+        'Max': df['CO_Israel'].max(),
+        '25th Percentile': df['CO_Israel'].quantile(0.25),
+        '75th Percentile': df['CO_Israel'].quantile(0.75),
+        'Count': df['CO_Israel'].count(),
+        'Missing Values': df['CO_Israel'].isnull().sum()
     }
     
+    # Coefficient of Variation (if mean is not zero)
+    if df['CO_Israel'].mean() != 0:
+        stats_dict['Coefficient of Variation'] = df['CO_Israel'].std() / df['CO_Israel'].mean()
+    else:
+        stats_dict['Coefficient of Variation'] = np.nan
+
+    # Stationarity Test: Augmented Dickey-Fuller test
+    from statsmodels.tsa.stattools import adfuller
+    adf_result = adfuller(df['CO_Israel'].dropna())
+    stats_dict['ADF Statistic'] = adf_result[0]
+    stats_dict['ADF p-value'] = adf_result[1]
+    stats_dict['ADF # Lags'] = adf_result[2]
+    stats_dict['ADF # Observations'] = adf_result[3]
+    stats_dict['ADF Critical Values'] = adf_result[4]
+
+    # Stationarity Test: KPSS test with warning suppression for InterpolationWarning
+    try:
+        import warnings
+        from statsmodels.tsa.stattools import kpss
+        from statsmodels.tools.sm_exceptions import InterpolationWarning
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=InterpolationWarning)
+            kpss_result = kpss(df['CO_Israel'].dropna(), regression='c', nlags="auto")
+            
+        stats_dict['KPSS Statistic'] = kpss_result[0]
+        stats_dict['KPSS p-value'] = kpss_result[1]
+        stats_dict['KPSS # Lags'] = kpss_result[2]
+        stats_dict['KPSS Critical Values'] = kpss_result[3]
+    except Exception as e:
+        stats_dict['KPSS Test'] = f"Error performing KPSS test: {e}"
+
     # Save statistics to file
     with open('visualizations/statistics_summary.txt', 'w') as f:
-        f.write("Basic Statistics for CO Levels in Israel\n")
-        f.write("=======================================\n\n")
+        f.write("Comprehensive Statistics for CO Levels in Israel\n")
+        f.write("=================================================\n\n")
         for stat, value in stats_dict.items():
-            f.write(f"{stat}: {value:.4f}\n")
+            if stat in ['ADF Critical Values', 'KPSS Critical Values'] and isinstance(value, dict):
+                f.write(f"{stat}:\n")
+                for key, val in value.items():
+                    f.write(f"    {key}: {val:.4f}\n")
+            else:
+                try:
+                    f.write(f"{stat}: {value:.4f}\n")
+                except Exception:
+                    f.write(f"{stat}: {value}\n")
 
 def additional_analysis(df):
-    # 1. Autocorrelation analysis
+    # 1. Autocorrelation analysis (using Yearly Integration)
     plt.figure(figsize=(10, 4))
-    plot_acf(df['CO_Israel'], lags=50)
-    plt.title('Autocorrelation of CO Levels')
+    # Use Yearly_Integration if available; drop missing values due to the shift operation.
+    if 'Yearly_Integration' in df.columns:
+        plot_acf(df['Yearly_Integration'].dropna(), lags=50)
+        plt.title('Autocorrelation of Yearly Integration of CO Levels')
+    else:
+        plot_acf(df['CO_Israel'], lags=50)
+        plt.title('Autocorrelation of CO Levels')
     plt.savefig('visualizations/autocorrelation.png')
     plt.close()
     
@@ -175,15 +224,15 @@ def run_analysis():
     seasonal_analysis(df)
     yearly_boxplot(df)
     basic_statistics(df)
-    additional_analysis(df)
     yearly_integration(df)
+    additional_analysis(df)
     
     print("Analysis completed. The following files have been created in the 'visualizations' folder:")
     print("1. fft_heatmap.png - Frequency analysis over time")
     print("2. seasonal_decomposition.png - Trend, seasonal, and residual components")
     print("3. yearly_boxplot.png - Yearly distribution of CO levels")
     print("4. statistics_summary.txt - Basic statistical measures")
-    print("5. autocorrelation.png - Autocorrelation plot")
+    print("5. autocorrelation.png - Autocorrelation plot (of Yearly Integration)")
     print("6. rolling_stats.png - Rolling statistics")
     print("7. yoy_change.png - Year-over-year change")
     print("8. yearly_integration.png - Yearly integration analysis")

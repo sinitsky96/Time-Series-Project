@@ -1,10 +1,21 @@
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import pandas as pd
 import numpy as np
 
 def load_and_transform_data():
-    # Read the CSV file
-    # Skip the first 2 rows (metadata) and use the 3rd row as header
-    df = pd.read_csv('air_data.csv', skiprows=2, header=0)
+    # Read the CSV file with UTF-8 encoding, skipping the first 2 rows
+    df = pd.read_csv('full_air_data.csv', encoding='utf-8', skiprows=2)
+    
+    # Remove rows where the date column contains Hebrew text
+    df = df[~df['תאריך ושעה'].str.contains('ממוצע|סטיית תקן|מקסימום|מינימלי|תאריך|שעה|אחוז|מס', na=False)]
+    
+    # Convert 24:00 to 00:00 and adjust the date
+    df['תאריך ושעה'] = df['תאריך ושעה'].str.replace('24:00', '00:00')
+    # Now convert the dates
+    df['תאריך ושעה'] = pd.to_datetime(df['תאריך ושעה'], format='%H:%M %d/%m/%Y')
+    # Add one day to adjust for the 24:00 -> 00:00 conversion
+    df['תאריך ושעה'] = df['תאריך ושעה'] + pd.Timedelta(days=1)
     
     # Replace '<Samp' values with 0
     df = df.replace('<Samp', 0)
@@ -20,13 +31,6 @@ def load_and_transform_data():
     # axis=1 means calculate across columns
     # skipna=True means ignore NaN values
     df['CO_Israel'] = df[numeric_columns].mean(axis=1, skipna=True)
-    
-    # Convert 24:00 to 00:00 and adjust the date
-    df['תאריך ושעה'] = df['תאריך ושעה'].str.replace('24:00', '00:00')
-    # Convert date column to datetime
-    df['תאריך ושעה'] = pd.to_datetime(df['תאריך ושעה'], format='%H:%M %d/%m/%Y')
-    # Add one day to adjust for the 24:00 -> 00:00 conversion
-    df['תאריך ושעה'] = df['תאריך ושעה'] + pd.Timedelta(days=1)
     
     # Create a column for first/second half of month (1-15 = 1, 16-31 = 2)
     df['half_month'] = df['תאריך ושעה'].dt.day.apply(lambda x: 1 if x <= 15 else 2)
@@ -56,6 +60,7 @@ if __name__ == "__main__":
     transformed_data = load_and_transform_data()
     
     # Save the transformed data to a new CSV file
-    transformed_data.to_csv('air_data_transformed.csv', index=False)
+    transformed_data.to_csv('full_air_data_transformed.csv', index=False)
     
-    print("Data transformation completed. Saved to 'air_data_transformed.csv'")
+
+    print("Data transformation completed. Saved to 'full_air_data_transformed.csv'")
