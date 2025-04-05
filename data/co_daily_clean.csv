@@ -5537,7 +5537,6 @@ date,station,CO
 26/02/2025,Jerusalem_Bar_Ilan,0.9
 27/02/2025,Jerusalem_Bar_Ilan,1
 28/02/2025,Jerusalem_Bar_Ilan,0.9
-01/03/2025,Jerusalem_Bar_Ilan,0.8
 01/01/2010,TLV_Yehuda_Hamacabi,0.8
 02/01/2010,TLV_Yehuda_Hamacabi,0.8
 03/01/2010,TLV_Yehuda_Hamacabi,1
@@ -11076,7 +11075,6 @@ date,station,CO
 26/02/2025,TLV_Yehuda_Hamacabi,0.6
 27/02/2025,TLV_Yehuda_Hamacabi,0.7
 28/02/2025,TLV_Yehuda_Hamacabi,0.7
-01/03/2025,TLV_Yehuda_Hamacabi,0.8
 01/01/2010,Bnei_Brak_Jabotinsky,1.2
 02/01/2010,Bnei_Brak_Jabotinsky,1.1
 03/01/2010,Bnei_Brak_Jabotinsky,1.7
@@ -16615,7 +16613,6 @@ date,station,CO
 26/02/2025,Bnei_Brak_Jabotinsky,
 27/02/2025,Bnei_Brak_Jabotinsky,0.8
 28/02/2025,Bnei_Brak_Jabotinsky,0.7
-01/03/2025,Bnei_Brak_Jabotinsky,0.8
 01/01/2010,Bnei_brak_highway4,1.4
 02/01/2010,Bnei_brak_highway4,1.4
 03/01/2010,Bnei_brak_highway4,1.9
@@ -22154,7 +22151,6 @@ date,station,CO
 26/02/2025,Bnei_brak_highway4,0.9
 27/02/2025,Bnei_brak_highway4,0.9
 28/02/2025,Bnei_brak_highway4,1.1
-01/03/2025,Bnei_brak_highway4,1.1
 01/01/2010,Rishon_Herzl,0.6
 02/01/2010,Rishon_Herzl,0.9
 03/01/2010,Rishon_Herzl,1.1
@@ -27693,7 +27689,6 @@ date,station,CO
 26/02/2025,Rishon_Herzl,1.1
 27/02/2025,Rishon_Herzl,1.1
 28/02/2025,Rishon_Herzl,1
-01/03/2025,Rishon_Herzl,0.9
 01/01/2010,Ranana_Ahuza,
 02/01/2010,Ranana_Ahuza,
 03/01/2010,Ranana_Ahuza,
@@ -33232,4 +33227,3 @@ date,station,CO
 26/02/2025,Ranana_Ahuza,0.3
 27/02/2025,Ranana_Ahuza,0.3
 28/02/2025,Ranana_Ahuza,0.3
-01/03/2025,Ranana_Ahuza,0.5
